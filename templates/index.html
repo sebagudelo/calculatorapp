@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculator</title>
+    <!-- Add Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@600&display=swap" rel="stylesheet">
+    <style>
+        /* Navigation styles */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 18px;
+            padding: 15px 25px;
+            transition: color 0.3s ease;
+        }
+        
+        .nav a:hover {
+            color: #e6f3ff;
+        }
+
+        /* Adjust body padding to account for fixed nav */
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;  /* Changed to column to stack title and calculator */
+            justify-content: center;
+            align-items: center;
+            background-color: #e6f3ff;  /* Changed to light blue */
+            padding: 60px 20px 20px 20px; /* Added top padding */
+        }
+        h1 {
+            font-family: 'Open Sans', sans-serif;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .calculator {
+            width: 300px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);  /* Optional: adds a subtle shadow */
+            margin-bottom: 20px;
+        }
+        .display {
+            width: 100%;
+            height: 40px;
+            margin-bottom: 10px;
+            font-size: 20px;
+            text-align: right;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+        }
+        button {
+            padding: 10px;
+            font-size: 18px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: #f0f0f0;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #e0e0e0;
+        }
+        #cat-container {
+            margin-top: 20px;
+            max-width: 300px;
+            text-align: center;
+        }
+        #cat-image {
+            max-width: 100%;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <a href="/">Home</a>
+    </nav>
+    <h1>Calculator App</h1>
+    <div class="calculator">
+        <input type="text" class="display" id="display" readonly>
+        <div class="buttons">
+            <button onclick="appendToDisplay('7')">7</button>
+            <button onclick="appendToDisplay('8')">8</button>
+            <button onclick="appendToDisplay('9')">9</button>
+            <button onclick="appendToDisplay('/')">/</button>
+            <button onclick="appendToDisplay('4')">4</button>
+            <button onclick="appendToDisplay('5')">5</button>
+            <button onclick="appendToDisplay('6')">6</button>
+            <button onclick="appendToDisplay('*')">*</button>
+            <button onclick="appendToDisplay('1')">1</button>
+            <button onclick="appendToDisplay('2')">2</button>
+            <button onclick="appendToDisplay('3')">3</button>
+            <button onclick="appendToDisplay('-')">-</button>
+            <button onclick="appendToDisplay('0')">0</button>
+            <button onclick="appendToDisplay('.')">.</button>
+            <button onclick="calculate()">=</button>
+            <button onclick="appendToDisplay('+')">+</button>
+            <button onclick="clearDisplay()" style="grid-column: span 4;">C</button>
+        </div>
+    </div>
+    <div id="cat-container">
+        <img id="cat-image" alt="Random cat">
+    </div>
+
+    <script>
+        function appendToDisplay(value) {
+            document.getElementById('display').value += value;
+        }
+
+        function clearDisplay() {
+            document.getElementById('display').value = '';
+        }
+
+        function calculate() {
+            const display = document.getElementById('display');
+            const expression = display.value;
+            
+            if (!expression.trim()) {
+                return;
+            }
+            
+            fetch('/calculate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ expression: expression })
+            })
+            .then(response => response.json())
+            .then(data => {
+                display.value = data.result;
+                // Update cat image
+                const catImage = document.getElementById('cat-image');
+                catImage.src = data.cat_url;
+                catImage.style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                display.value = 'Error';
+            });
+        }
+    </script>
+</body>
+</html> 
