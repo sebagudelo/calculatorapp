@@ -11,12 +11,15 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     return response
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def home():
     return render_template('index.html')
 
-@app.route('/calculate', methods=['POST'])
+@app.route('/calculate', methods=['POST', 'OPTIONS'])
 def calculate():
+    if request.method == 'OPTIONS':
+        return jsonify({'status': 'ok'})
+        
     try:
         # Print the received data for debugging
         print("Received data:", request.json)
@@ -40,6 +43,11 @@ def calculate():
     except Exception as e:
         print("Error occurred:", str(e))
         return jsonify({'result': f'Error: {str(e)}'})
+
+# Add this for Vercel
+@app.route('/_vercel/deploy-complete', methods=['POST'])
+def deploy_complete():
+    return jsonify({'status': 'ok'})
 
 app.debug = True
 
