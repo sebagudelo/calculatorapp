@@ -62,6 +62,8 @@
             margin-bottom: 10px;
             font-size: 20px;
             text-align: right;
+            padding: 5px;
+            box-sizing: border-box;
         }
         .buttons {
             display: grid;
@@ -80,21 +82,21 @@
             background: #e0e0e0;
         }
         #cat-container {
+            width: 300px;
             margin-top: 20px;
-            max-width: 300px;
             text-align: center;
         }
         #cat-image {
             max-width: 100%;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            display: none;
+            display: none;  /* Will be shown when image loads */
         }
     </style>
 </head>
 <body>
     <nav class="nav">
-        <a href="/">Home</a>
+        <a onclick="window.location.reload()">Home</a>
     </nav>
     <h1>Calculator App</h1>
     <div class="calculator">
@@ -130,6 +132,8 @@
 
         function clearDisplay() {
             document.getElementById('display').value = '';
+            const catImage = document.getElementById('cat-image');
+            catImage.style.display = 'none';
         }
 
         function calculate() {
@@ -140,7 +144,7 @@
                 return;
             }
             
-            fetch('/api/calculate', {
+            fetch('/calculate', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -150,10 +154,11 @@
             .then(response => response.json())
             .then(data => {
                 display.value = data.result;
-                // Update cat image
                 const catImage = document.getElementById('cat-image');
-                catImage.src = data.cat_url;
-                catImage.style.display = 'block';
+                if (data.cat_url) {
+                    catImage.src = data.cat_url;
+                    catImage.style.display = 'block';
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
