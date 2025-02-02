@@ -23,6 +23,7 @@
             font-size: 18px;
             padding: 15px 25px;
             transition: color 0.3s ease;
+            cursor: pointer;  /* Added to show it's clickable */
         }
         
         .nav a:hover {
@@ -139,7 +140,7 @@
                 return;
             }
             
-            fetch('/calculate', {
+            fetch('/api/calculate', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
